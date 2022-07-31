@@ -97,6 +97,11 @@ class PointMassFrameDataset(Dataset):
             raise IndexError
 
         ep_num, subidx = self.idx_to_ep_subidx(idx)
+        # HACK! this is so there is always something before and after the number
+        if subidx == 0:
+            subidx = 1
+        elif subidx == self.ep_length - 1:
+            subidx = self.ep_length - 2
         # print(f"[{self.split}] {ep_num} {subidx}")
 
         traj_dict = self.f[str(ep_num)]
@@ -106,11 +111,34 @@ class PointMassFrameDataset(Dataset):
 
         goal = traj_dict["goals"][:]
 
+
+        # get a random positive example from the same episode
+        subidx_gt = np.random.randint(0, subidx)
+        gt_img = traj_dict["imgs"][subidx_gt, :]
+        pp_gt_img = self.img_transforms(gt_img)
+
+        # get a random negative example from the same episode
+        subidx_lt = np.random.randint(subidx + 1, self.ep_length)
+        lt_img = traj_dict["imgs"][subidx_lt, :]
+        pp_lt_img = self.img_transforms(lt_img)
+
+        # get a random example from a different episode
+        other_eps = copy.copy(self.ep_keys)
+        other_eps.remove(ep_num)
+        other_ep_num = random.choice(other_eps)
+        rand_idx = np.random.randint(self.ep_length)
+        other_traj_dict = self.f[str(other_ep_num)]
+        other_img = other_traj_dict["imgs"][rand_idx, :]
+        pp_other_img = self.img_transforms(other_img)
+        other_goal = other_traj_dict["goals"][:]
+
         return {
             "image": pp_img,
-            "traj_num": ep_num,
-            "step": subidx,
-            "goal": goal,
+            "gt_image": pp_gt_img,
+            "lt_image": pp_lt_img,
+            "goal": goal.astype(np.float32),
+            "other_image": pp_other_img,
+            "other_goal": other_goal.astype(np.float32),
         }
 
 

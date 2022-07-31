@@ -31,13 +31,14 @@ class FrameClassifier(nn.Module):
         # add our head to it
         self.output_size = output_size
         self.fc_head = nn.Sequential(
-            nn.Linear(fc_in_size, 256),
+            nn.Linear(fc_in_size + 2, 256), # +2 because of the goal!
             nn.PReLU(),
             nn.Linear(256, output_size)
         )
 
-    def forward(self, x: torch.Tensor):
+    def forward(self, x: torch.Tensor, goal: torch.Tensor):
         x = self.resnet(x).squeeze(dim=2).squeeze(dim=2)
+        x = torch.cat([x, goal], dim=1)
         x = self.fc_head(x)
         return x
 
