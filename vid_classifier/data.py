@@ -16,8 +16,6 @@ from torchvision.transforms import transforms
 from tqdm import tqdm
 from pytorch3d import transforms as rotation_transforms
 
-TRAIN_TEST_VAL_SPLIT_PATH = os.path.expanduser("~/localdata/cam2hand_dset/splits.pkl")
-
 def get_resnet_preprocess_transforms():
     return transforms.Compose([
         transforms.ToTensor(),
@@ -149,9 +147,6 @@ if __name__ == "__main__":
     # generate_train_test_val_splits()
     # exit()
 
-    # combine_subject_hdf5_data(os.path.expanduser("~/localdata/cam2hand_dset"))
-    # exit()
-
     all_cam2hand_dset = PointMassFrameDataset(data_split="all")
     train_cam2hand_dset = PointMassFrameDataset(data_split="train")
     test_cam2hand_dset = PointMassFrameDataset(data_split="test")
@@ -169,40 +164,3 @@ if __name__ == "__main__":
     for val in tqdm(val_cam2hand_dset):
         pass
     input()
-
-    # dataloader = DataLoader(cam2hand_dset, batch_size=64, num_workers=12, shuffle=False)
-    # for data_dict in tqdm(dataloader):
-    #     pass
-
-    exit()
-    unnormalize = get_unnormalize_transform()
-    img_save_folder = os.path.expanduser("~/localdata/dset_bridge/models/TEST")
-    if not os.path.isdir(f"{img_save_folder}/s1"):
-        os.makedirs(f"{img_save_folder}/s1")
-        os.makedirs(f"{img_save_folder}/s2")
-    for idx, (s1, s2, rand_vec) in enumerate(seq2seq_singleenv_dset):
-        plot_idx_str = str(idx).zfill(len(str(len(seq2seq_singleenv_dset))))
-        for t_idx in range(200):
-            t_idx_str = str(t_idx).zfill(len(str(s1.shape[0])))
-            img1 = s1[t_idx]
-            img2 = s2[0][t_idx]
-            torchvision.utils.save_image(unnormalize(img1), f"{img_save_folder}/s1/{plot_idx_str}_{t_idx_str}.png")
-            torchvision.utils.save_image(unnormalize(img2), f"{img_save_folder}/s2/{plot_idx_str}_{t_idx_str}.png")
-        if idx == 1:
-            break
-
-    import pdb; pdb.set_trace()
-    s1, s2, rand_vec = seq2seq_singleenv_dset[0]
-
-    data_file_list = [
-        "~/localdata/dset_bridge/reach-v2-goal-observable_data.hdf5",
-        "~/localdata/dset_bridge/push-v2-goal-observable_data.hdf5",
-        "~/localdata/dset_bridge/pick-place-v2-goal-observable_data.hdf5",
-    ]
-    seq2seq_multienv_dset = RobotTrajMultiEnvDataset(data_file_list, use_imgs=True, overfit=True)
-    count = 0
-
-    for s1, _, _ in seq2seq_multienv_dset:
-        count += 1
-        if count % 100 == 0:
-            print(count)

@@ -129,6 +129,11 @@ for e in pbar:
             with torch.no_grad():
                 model.eval()
 
+                val_losses = []
+                val_same_ep_gt_loss = []
+                val_same_ep_lt_loss = []
+                val_diff_ep_loss = []
+
                 for data_dict in tqdm(val_dataloader):
                     xs = data_dict["image"].to(device)
                     gt_xs = data_dict["gt_image"].to(device)
@@ -156,11 +161,16 @@ for e in pbar:
                     diff_ep_loss = loss_f(other_pair_logits, other_pair_labels)
                     loss = same_ep_gt_loss + same_ep_lt_loss + diff_ep_loss
 
-                    loss_dict["val"]['iterations'].append(iteration)
-                    loss_dict["val"]['loss'].append(loss.item())
-                    loss_dict["val"]['same_ep_gt_loss'].append(same_ep_gt_loss.item())
-                    loss_dict["val"]['same_ep_lt_loss'].append(same_ep_lt_loss.item())
-                    loss_dict["val"]['diff_ep_loss'].append(diff_ep_loss.item())
+                    val_losses.append(loss.item())
+                    val_same_ep_gt_loss.append(same_ep_gt_loss.item())
+                    val_same_ep_lt_loss.append(same_ep_lt_loss.item())
+                    val_diff_ep_loss.append(diff_ep_loss.item())
+
+                loss_dict["val"]['iterations'].append(iteration)
+                loss_dict["val"]['loss'].append(np.mean(val_losses))
+                loss_dict["val"]['same_ep_gt_loss'].append(np.mean(val_same_ep_gt_loss))
+                loss_dict["val"]['same_ep_lt_loss'].append(np.mean(val_same_ep_lt_loss))
+                loss_dict["val"]['diff_ep_loss'].append(np.mean(val_diff_ep_loss))
 
                 model.train()
 
