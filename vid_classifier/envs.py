@@ -2,6 +2,7 @@ import copy
 import os
 import pickle
 
+import h5py
 import gym
 import matplotlib.pyplot as plt
 import numpy as np
@@ -137,8 +138,24 @@ def generate_dataset():
     }
     pickle.dump(pickle_dict, open(save_path, "wb"))
 
+def convert_pickle_to_hdf5():
+    pkl_path = os.path.expanduser("~/localdata/vid_classifier/pointmass.pkl")
+    pickle_dict = pickle.load(open(pkl_path, "rb"))
+    num_episodes=200
+
+    h5py_save_path = os.path.expanduser("~/localdata/vid_classifier/pointmass.hdf5")
+    f = h5py.File(h5py_save_path, 'w')
+    for ep_idx in range(num_episodes):
+        ep_group = f.create_group(str(ep_idx))
+
+        for k, v in pickle_dict.items():
+            ep_group[k] = v[ep_idx]
+
+    f.close()
+
 if __name__ == "__main__":
-    generate_dataset()
+    # generate_dataset()
+    convert_pickle_to_hdf5()
     exit()
 
     env = PointEnv()
