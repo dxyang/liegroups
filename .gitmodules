@@ -6,4 +6,4 @@
 	url = https://github.com/facebookresearch/pytorch3d.git
 [submodule "liegroups"]
 	path = liegroups
-	url = https://github.com/utiasSTARS/liegroups.git
+	url = git@github.com:dxyang/liegroups.git
