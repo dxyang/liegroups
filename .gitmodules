@@ -1,6 +1,6 @@
 [submodule "GRAB"]
 	path = GRAB
-	url = https://github.com/otaheri/GRAB
+	url = https://github.com/dxyang/GRAB
 [submodule "pytorch3d"]
 	path = pytorch3d
 	url = https://github.com/facebookresearch/pytorch3d.git
