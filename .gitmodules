@@ -7,3 +7,6 @@
 [submodule "liegroups"]
 	path = liegroups
 	url = git@github.com:dxyang/liegroups.git
+[submodule "frankmocap"]
+	path = frankmocap
+	url = git@github.com:dxyang/frankmocap.git
